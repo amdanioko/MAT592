@@ -1,0 +1,186 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>2. Robust linear regression</title><meta name="generator" content="MATLAB 9.1"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2017-11-15"><meta name="DC.source" content="Q2PartCrobustlin.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; } 
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, code { font-size:12px; }
+tt { font-size: 1.2em; }
+pre { margin:0px 0px 20px; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+pre.error { color:red; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style></head><body><div class="content"><h1>2. Robust linear regression</h1><!--introduction--><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">Part C.</a></li></ul></div><h2 id="1">Part C.</h2><pre class="codeinput"><span class="comment">% In this section I used the fminsearch to find the w by minimizing E1. The loop is one way of creating the minimum</span>
+<span class="comment">% error E1 by using ww0 and ww1 from the previous results.</span>
+<span class="comment">% E1Wa and E1min is define to find the minimum between w0 and w1.</span>
+<span class="comment">% After computing the minimum our results change.</span>
+
+E1Wmin = 1000;
+<span class="keyword">for</span> ww0 = [-3:0.01:4];
+    <span class="keyword">for</span> ww1 = [-3:0.01:4];
+        E1Wa = sum(abs(z'-[ww0,ww1]*X'));
+        <span class="keyword">if</span> E1Wa &lt; E1Wmin;
+            wstar = [ww0,ww1];
+            E1Wmin = E1Wa;
+        <span class="keyword">end</span>
+    <span class="keyword">end</span>
+<span class="keyword">end</span>
+zpreda = wstar*X'
+
+
+figure
+plot(x,zpreda)
+hold <span class="string">on</span>
+plot(x,z,<span class="string">'o'</span>)
+grid <span class="string">on</span>
+legend(<span class="string">'Data'</span>,<span class="string">'Predict'</span>)
+title(<span class="string">'Robust Linear Regression on linreg+outlier'</span>)
+
+<span class="comment">% This code below is the alternative method that is used to find the</span>
+<span class="comment">% minimun by using the subroutine fminsearch function.</span>
+
+E1w = @(we1) sum(abs(we1(1)+we1(2)*x-z))
+[we1,~] = fminsearch(E1w,[w(1),w(2)])
+zprednew = we1(1) +we1(2)*x
+
+<span class="comment">% The scatter plot will display the image of the linear regression and the</span>
+<span class="comment">% outlier below.</span>
+</pre><pre class="codeoutput">
+zpreda =
+
+  Columns 1 through 7
+
+    4.4100    5.4900    6.5700    7.6500    8.7300    9.8100   10.8900
+
+  Columns 8 through 12
+
+   11.9700   13.0500   14.1300   15.2100   16.2900
+
+
+E1w =
+
+  function_handle with value:
+
+    @(we1)sum(abs(we1(1)+we1(2)*x-z))
+
+
+we1 =
+
+    3.8089    1.1994
+
+
+zprednew =
+
+    4.4086
+    5.4881
+    6.5675
+    7.6470
+    8.7265
+    9.8060
+   10.8855
+   11.9650
+   13.0444
+   14.1239
+   15.2034
+   16.2829
+
+</pre><img vspace="5" hspace="5" src="Q2PartCrobustlin_01.png" alt=""> <p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2016b</a><br></p></div><!--
+##### SOURCE BEGIN #####
+%% 2. Robust linear regression
+
+%% Part C.
+
+% In this section I used the fminsearch to find the w by minimizing E1. The loop is one way of creating the minimum 
+% error E1 by using ww0 and ww1 from the previous results. 
+% E1Wa and E1min is define to find the minimum between w0 and w1.
+% After computing the minimum our results change. 
+
+E1Wmin = 1000;
+for ww0 = [-3:0.01:4];
+    for ww1 = [-3:0.01:4];
+        E1Wa = sum(abs(z'-[ww0,ww1]*X'));
+        if E1Wa < E1Wmin;
+            wstar = [ww0,ww1];
+            E1Wmin = E1Wa;
+        end
+    end
+end
+zpreda = wstar*X'
+
+
+figure
+plot(x,zpreda)
+hold on
+plot(x,z,'o')
+grid on
+legend('Data','Predict')
+title('Robust Linear Regression on linreg+outlier')
+
+% This code below is the alternative method that is used to find the
+% minimun by using the subroutine fminsearch function.
+
+E1w = @(we1) sum(abs(we1(1)+we1(2)*x-z))
+[we1,~] = fminsearch(E1w,[w(1),w(2)])
+zprednew = we1(1) +we1(2)*x
+
+% The scatter plot will display the image of the linear regression and the
+% outlier below.
+
+##### SOURCE END #####
+--></body></html>

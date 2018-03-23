@@ -1,0 +1,177 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>Question 5</title><meta name="generator" content="MATLAB 9.1"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2017-11-15"><meta name="DC.source" content="Q5Gaussianmix.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; } 
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, code { font-size:12px; }
+tt { font-size: 1.2em; }
+pre { margin:0px 0px 20px; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+pre.error { color:red; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style></head><body><div class="content"><h1>Question 5</h1><pre class="codeinput"><span class="comment">% A Gaussian mixture model and use it to generate 500 samples from the mixture density defined</span>
+
+<span class="comment">% First distribution is centered at (0,0), second at (1,1)</span>
+MU = [0 0;1 0;1 1]
+<span class="comment">% This code is the covariance of the first identity matrix, second diagonal</span>
+sigma = cat(3,[.1 .05;.05 .1],[.2 .01;.01 .2],[.1 0;0 .1])
+<span class="comment">% Equal the priors, mixing-weights</span>
+p = [.6 .2 .2 ]
+<span class="comment">% This code builds the Gaussian mixture model</span>
+gm = gmdistribution(MU,sigma,p)
+gmPDF = @(x,y)pdf(gm,[x y])
+
+<span class="comment">% This below will plot the contour map 2D projection</span>
+figure
+ezcontour(gmPDF,[-1 2],[-2 2])
+hold <span class="string">on</span>
+title(<span class="string">'Gaussian Mixture Model &amp; PDF Contours'</span>)
+
+<span class="comment">% Generate 500 sample from Gaussian mixture models</span>
+X = random(gm,500);
+scatter(X(:,1),X(:,2),10,<span class="string">'.'</span>)
+title(<span class="string">'GMM - PDF Contours and Simulated Data'</span>)
+
+<span class="comment">% The graph of the 2D projection displays a contour graph and shows a visal meaning of the Gaussian Mixture Model. The image also shows a component GMM with the pdf of the fitted GMM. I do think it is more helpful to write your own code in order to understand the relation between the priors, mean, and covariances. It shows in the workspace how everything is calculated.</span>
+</pre><pre class="codeoutput">
+MU =
+
+     0     0
+     1     0
+     1     1
+
+
+sigma(:,:,1) =
+
+    0.1000    0.0500
+    0.0500    0.1000
+
+
+sigma(:,:,2) =
+
+    0.2000    0.0100
+    0.0100    0.2000
+
+
+sigma(:,:,3) =
+
+    0.1000         0
+         0    0.1000
+
+
+p =
+
+    0.6000    0.2000    0.2000
+
+
+gm = 
+
+Gaussian mixture distribution with 3 components in 2 dimensions
+Component 1:
+Mixing proportion: 0.600000
+Mean:     0     0
+
+Component 2:
+Mixing proportion: 0.200000
+Mean:     1     0
+
+Component 3:
+Mixing proportion: 0.200000
+Mean:     1     1
+
+
+
+
+gmPDF =
+
+  function_handle with value:
+
+    @(x,y)pdf(gm,[x,y])
+
+</pre><img vspace="5" hspace="5" src="Q5Gaussianmix_01.png" alt=""> <p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2016b</a><br></p></div><!--
+##### SOURCE BEGIN #####
+%% Question 5
+
+% A Gaussian mixture model and use it to generate 500 samples from the mixture density defined 
+
+% First distribution is centered at (0,0), second at (1,1)
+MU = [0 0;1 0;1 1]
+% This code is the covariance of the first identity matrix, second diagonal
+sigma = cat(3,[.1 .05;.05 .1],[.2 .01;.01 .2],[.1 0;0 .1])
+% Equal the priors, mixing-weights
+p = [.6 .2 .2 ]
+% This code builds the Gaussian mixture model
+gm = gmdistribution(MU,sigma,p)
+gmPDF = @(x,y)pdf(gm,[x y])
+
+% This below will plot the contour map 2D projection
+figure
+ezcontour(gmPDF,[-1 2],[-2 2])
+hold on
+title('Gaussian Mixture Model & PDF Contours')
+
+% Generate 500 sample from Gaussian mixture models
+X = random(gm,500);
+scatter(X(:,1),X(:,2),10,'.')
+title('GMM - PDF Contours and Simulated Data')
+
+% The graph of the 2D projection displays a contour graph and shows a visal meaning of the Gaussian Mixture Model. The image also shows a component GMM with the pdf of the fitted GMM. I do think it is more helpful to write your own code in order to understand the relation between the priors, mean, and covariances. It shows in the workspace how everything is calculated. 
+##### SOURCE END #####
+--></body></html>
