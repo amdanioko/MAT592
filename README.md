@@ -1,1 +1,1 @@
-# MAT592
+# Machine Learning Projects
